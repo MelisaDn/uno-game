@@ -543,7 +543,7 @@ class UnoInterface:
         # Check if it's an AI player's turn
         if self.game.current_player != 0:  # Not the human player
             # Add a slight delay for better visualization
-            pygame.time.delay(2000)
+            pygame.time.delay(3000)
             
             current_player = self.game.players[self.game.current_player]
             move_index = None
