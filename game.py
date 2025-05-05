@@ -1,6 +1,7 @@
 from card import Card, Deck
 from player import Player
 import random
+from typing import Optional
 
 class UnoGame:
     def __init__(self):
@@ -79,11 +80,11 @@ class UnoGame:
                         played_card.color = chosen_color
                         print(f"{player.name} chose {chosen_color} for wild card")
                 
-                # Handle special cards
-                self.handle_special_card(played_card)
-                
-                # Next player's turn
-                self.next_turn()
+                # Special cards handle their own turn logic
+                if played_card.value in ["skip", "draw2", "wild_draw4", "reverse"]:
+                    self.handle_special_card(played_card)
+                else:
+                    self.next_turn()  # Normal cards advance turn here
                 return True
         return False
         
@@ -115,3 +116,10 @@ class UnoGame:
         player = self.players[self.current_player]
         player.draw(self.deck, 1)
         self.next_turn()
+
+
+    def check_winner(self) -> Optional[str]:
+        for player in self.players:
+            if len(player.hand) == 0:
+                return player.name
+        return None

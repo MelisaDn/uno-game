@@ -19,25 +19,34 @@ class UnoInterface:
     def run(self):
         running = True
         while running:
+            # Check for winner before processing input or drawing
+            winner = self.game.check_winner()
+            if winner:
+                self.draw_game()  # Draw final state
+                self.show_winner(winner)  # Show overlay with winner message
+                pygame.display.flip()
+                pygame.time.delay(5000)  # Pause for 5 seconds
+                running = False
+                continue  # Skip the rest of the loop this cycle
+
             # Handle events
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    # Handle card selection and playing
-                    if event.button == 1:  
+                    if event.button == 1:
                         self.handle_click(event.pos)
-            
+
             # Let AI players take their turns
             self.ai_play_turn()
-            
+
             # Draw everything
             self.draw_game()
-            
+
             # Update the display
             pygame.display.flip()
             self.clock.tick(30)
-            
+
         pygame.quit()
         
     def handle_click(self, pos):
@@ -251,3 +260,13 @@ class UnoInterface:
                     screen.blit(rotated_img, (card_x, card_y))
 
 
+    def show_winner(self, winner_name):
+        # Overlay the screen with a winner message
+        overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+        overlay.set_alpha(200)
+        overlay.fill(BLACK)
+        screen.blit(overlay, (0, 0))
+        
+        win_text = self.title_font.render(f"{winner_name} WINS!", True, YELLOW)
+        text_rect = win_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+        screen.blit(win_text, text_rect)
