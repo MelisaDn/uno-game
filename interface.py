@@ -57,8 +57,14 @@ class UnoInterface:
             # Check if clicking on a card in hand
             for i, card in enumerate(current_player.hand):
                 if card.rect.collidepoint(pos):
-                    if self.game.play_card(i):
-                        print(f"Played {card}")
+                    if self.game.is_valid_move(current_player.hand[i]):
+                        card = current_player.hand[i]
+                        if card.color == "wild":
+                            self.selected_card_index = i  # Save card to play after choosing color
+                            self.show_color_chooser()     # Custom method to prompt color
+                        else:
+                            self.game.play_card(i)
+                            print(f"Played {card}")
                     else:
                         print(f"Invalid move: {card}")
                     break
@@ -259,6 +265,49 @@ class UnoInterface:
                 else:
                     screen.blit(rotated_img, (card_x, card_y))
 
+
+    def show_color_chooser(self):
+        choosing = True
+        color_buttons = {
+            "red": pygame.Rect(200, 250, 100, 100),
+            "green": pygame.Rect(350, 250, 100, 100),
+            "blue": pygame.Rect(500, 250, 100, 100),
+            "yellow": pygame.Rect(650, 250, 100, 100)
+        }
+
+        while choosing:
+            screen.fill(BLACK)
+            text = self.title_font.render("Choose a color", True, WHITE)
+            screen.blit(text, (SCREEN_WIDTH // 2 - text.get_width() // 2, 150))
+
+            for color, rect in color_buttons.items():
+                pygame.draw.rect(screen, pygame.Color(color), rect)
+                label = self.font.render(color.upper(), True, BLACK)
+                label_rect = label.get_rect(center=rect.center)
+                screen.blit(label, label_rect)
+
+            pygame.display.flip()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    for color, rect in color_buttons.items():
+                        if rect.collidepoint(event.pos):
+                            self.play_selected_wild_card(color)
+                            choosing = False
+                            break
+
+
+    def play_selected_wild_card(self, chosen_color):
+            player = self.game.players[0]  # Human is always player 0
+            card = player.hand[self.selected_card_index]
+            card.color = chosen_color
+            self.game.play_card(self.selected_card_index)
+            print(f"Played wild card with color {chosen_color}")
+            self.selected_card_index = -1
+                        
 
     def show_winner(self, winner_name):
         # Overlay the screen with a winner message

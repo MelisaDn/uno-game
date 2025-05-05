@@ -41,52 +41,54 @@ class UnoGame:
         
     def is_valid_move(self, card: Card) -> bool:
         top_card = self.get_top_card()
-        
-        # Wild cards can always be played
-        if card.color == "wild":
+
+        # Always allow wild and wild_draw4
+        if card.value in ["wild", "wild_draw4"]:
             return True
-            
-        # Same color or same value is valid
+
+        # Match by color or value
         if card.color == top_card.color or card.value == top_card.value:
             return True
-            
+
         return False
+
         
     def play_card(self, card_index: int) -> bool:
         player = self.players[self.current_player]
+
         if 0 <= card_index < len(player.hand):
             card = player.hand[card_index]
+
+            # AI wild card color selection BEFORE validation
+            if card.value in ["wild", "wild_draw4"] and self.current_player != 0:
+                colors = {"red": 0, "blue": 0, "green": 0, "yellow": 0}
+                for c in player.hand:
+                    if c.color in colors:
+                        colors[c.color] += 1
+                chosen_color = max(colors, key=colors.get)
+                if all(count == 0 for count in colors.values()):
+                    chosen_color = random.choice(["red", "blue", "green", "yellow"])
+                card.color = chosen_color
+                print(f"{player.name} chose {chosen_color} for wild card")
+
+            #  Validate with assigned color
             if self.is_valid_move(card):
                 played_card = player.play_card(card_index)
                 self.discard_pile.append(played_card)
-                
-                # Handle wild cards - set color based on player
-                if played_card.color == "wild":
-                    if self.current_player == 0:  # Human player
-                        # For now, just pick a random color
-                        # In a real implementation, you would display a color picker
-                        played_card.color = random.choice(["red", "blue", "green", "yellow"])
-                    else:  # AI players
-                        # Find most common color in hand
-                        colors = {"red": 0, "blue": 0, "green": 0, "yellow": 0}
-                        for c in player.hand:
-                            if c.color in colors:
-                                colors[c.color] += 1
-                        
-                        chosen_color = max(colors, key=colors.get)
-                        if all(count == 0 for count in colors.values()):
-                            chosen_color = random.choice(["red", "blue", "green", "yellow"])
-                        
-                        played_card.color = chosen_color
-                        print(f"{player.name} chose {chosen_color} for wild card")
-                
-                # Special cards handle their own turn logic
+
+
+                # Human wild card handled via GUI
                 if played_card.value in ["skip", "draw2", "wild_draw4", "reverse"]:
                     self.handle_special_card(played_card)
                 else:
-                    self.next_turn()  # Normal cards advance turn here
+                    self.next_turn()
+
                 return True
+
         return False
+        
+
+
         
     def handle_special_card(self, card: Card):
         # Skip: next player misses a turn
