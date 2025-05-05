@@ -30,6 +30,12 @@ class Card:
         
         # Add the value text
         font = pygame.font.SysFont('Arial', 30, bold=True)
+        for dx in [-1, 0, 1]:
+            for dy in [-1, 0, 1]:
+                if dx != 0 or dy != 0:
+                    shadow = font.render(self.value, True, BLACK)
+                    shadow_rect = shadow.get_rect(center=(CARD_WIDTH/2 + dx, CARD_HEIGHT/2 + dy))
+                    card_img.blit(shadow, shadow_rect)
         text = font.render(self.value, True, WHITE)
         text_rect = text.get_rect(center=(CARD_WIDTH/2, CARD_HEIGHT/2))
         card_img.blit(text, text_rect)

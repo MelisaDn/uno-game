@@ -132,20 +132,7 @@ class UnoInterface:
         current_player = self.game.players[self.game.current_player]
         indicator = self.font.render(f"Current Turn: {current_player.name}", True, WHITE)
         screen.blit(indicator, (20, 20))
-        
-        # Draw card count for each player
-        for i, player in enumerate(self.game.players):
-            if i == 0:  # Bottom player
-                count_pos = (20, SCREEN_HEIGHT - 40)
-            elif i == 1:  # Left player
-                count_pos = (20, 60)
-            elif i == 2:  # Top player
-                count_pos = (SCREEN_WIDTH - 150, 60)
-            else:  # Right player
-                count_pos = (SCREEN_WIDTH - 150, SCREEN_HEIGHT - 40)
-            
-            count_text = self.font.render(f"{player.name}: {len(player.hand)} cards", True, WHITE)
-            screen.blit(count_text, count_pos)
+
         
     def draw_deck(self):
         # Draw the deck

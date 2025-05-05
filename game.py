@@ -58,9 +58,13 @@ class UnoGame:
 
         if 0 <= card_index < len(player.hand):
             card = player.hand[card_index]
-
-            # AI wild card color selection BEFORE validation
-            if card.value in ["wild", "wild_draw4"] and self.current_player != 0:
+            
+            # Store original values before any modifications
+            original_value = card.value
+            original_color = card.color
+            
+            # Handle wild color selection
+            if original_value in ["wild", "wild_draw4"] and self.current_player != 0:
                 colors = {"red": 0, "blue": 0, "green": 0, "yellow": 0}
                 for c in player.hand:
                     if c.color in colors:
@@ -68,25 +72,43 @@ class UnoGame:
                 chosen_color = max(colors, key=colors.get)
                 if all(count == 0 for count in colors.values()):
                     chosen_color = random.choice(["red", "blue", "green", "yellow"])
-                card.color = chosen_color
-                print(f"{player.name} chose {chosen_color} for wild card")
+                
+                # Temporarily set color back to "wild" for validation
+                temp_color = card.color
+                card.color = original_color
+                
+                # Check if valid move with original wild card state
+                valid_move = self.is_valid_move(card)
+                
+                # Now set the chosen color
+                if valid_move:
+                    card.color = chosen_color
+                    print(f"{player.name} chose {chosen_color} for wild card")
+                else:
+                    return False
+            else:
+                # Normal validation for non-wild cards
+                valid_move = self.is_valid_move(card)
+                
+            if valid_move:
+                # Print debug
+                print(f"{player.name} is playing: {card.color} {card.value}")
 
-            #  Validate with assigned color
-            if self.is_valid_move(card):
+                # Now safely remove the card from hand
                 played_card = player.play_card(card_index)
+
+                # Add to discard pile
                 self.discard_pile.append(played_card)
 
-
-                # Human wild card handled via GUI
-                if played_card.value in ["skip", "draw2", "wild_draw4", "reverse"]:
+                # Handle special cards
+                if original_value in ["skip", "draw2", "wild_draw4", "reverse"]:
                     self.handle_special_card(played_card)
                 else:
                     self.next_turn()
 
-                return True
-
-        return False
-        
+                return True  # Play succeeded
+                
+        return False  # Invalid or unplayable
 
 
         

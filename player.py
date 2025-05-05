@@ -44,7 +44,7 @@ class RuleBasedAI:
                         if card.color != "wild" and card.value in ["skip", "reverse", "draw2"]]
         number_cards = [(i, card) for i, card in playable_cards 
                        if card.color != "wild" and card.value not in ["skip", "reverse", "draw2"]]
-        wild_cards = [(i, card) for i, card in playable_cards if card.color == "wild"]
+        wild_cards = [(i, card) for i, card in playable_cards if card.value in ["wild", "wild_draw4"]]
         
         # Choose in order of priority
         if special_cards:
