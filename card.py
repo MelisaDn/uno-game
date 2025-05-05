@@ -6,7 +6,6 @@ class Card:
     def __init__(self, color: str, value: str):
         self.color = color
         self.value = value
-        # Placeholder for card image
         self.image = None
         self.rect = pygame.Rect(0, 0, CARD_WIDTH, CARD_HEIGHT)
         

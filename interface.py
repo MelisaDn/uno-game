@@ -106,7 +106,6 @@ class UnoInterface:
                     print(f"{current_player.name} played {card}")
                 else:
                     print(f"Invalid move by {current_player.name}: {card}")
-                    # This shouldn't happen if AI is working correctly
             else:
                 # Draw a card
                 self.game.draw_from_deck()
@@ -185,17 +184,17 @@ class UnoInterface:
             start_x = 20
             y = SCREEN_HEIGHT//2 - (num_cards * (CARD_WIDTH//3))//2
             rotation = 90
-            face_up = True  # Changed to show AI cards
+            face_up = True  # Change to show AI cards
         elif player.position == 2:  # Top player
             start_x = SCREEN_WIDTH//2 - (num_cards * (CARD_WIDTH - CARD_SPACING))//2
             y = 60
             rotation = 0
-            face_up = True  # Changed to show AI cards
+            face_up = True  # Change to show AI cards
         else:  # Right player
             start_x = SCREEN_WIDTH - CARD_WIDTH - 20
             y = SCREEN_HEIGHT//2 - (num_cards * (CARD_WIDTH//3))//2
             rotation = 90
-            face_up = True  # Changed to show AI cards
+            face_up = True  # Change to show AI cards
             
         # Draw player name
         name_text = self.font.render(player.name, True, WHITE)

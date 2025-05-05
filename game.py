@@ -73,7 +73,7 @@ class UnoGame:
                 if all(count == 0 for count in colors.values()):
                     chosen_color = random.choice(["red", "blue", "green", "yellow"])
                 
-                # Temporarily set color back to "wild" for validation
+                # Set color back to "wild" for validation
                 temp_color = card.color
                 card.color = original_color
                 
@@ -94,7 +94,7 @@ class UnoGame:
                 # Print debug
                 print(f"{player.name} is playing: {card.color} {card.value}")
 
-                # Now safely remove the card from hand
+                # Remove the card from hand
                 played_card = player.play_card(card_index)
 
                 # Add to discard pile
