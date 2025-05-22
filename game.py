@@ -16,6 +16,7 @@ class UnoGame:
         ]
         self.current_player = 0
         self.direction = 1  # 1: clockwise, -1: counter-clockwise
+        
         self.last_wild_color = None  # tracks chosen wild card colors
         
         self.setup_game()
@@ -44,7 +45,7 @@ class UnoGame:
     def is_valid_move(self, card: Card) -> bool:
         top_card = self.get_top_card()
 
-        # we always allow wild and wild_draw4
+        # Always allow wild and wild_draw4 cards to be played 
         if card.value in ["wild", "wild_draw4"]:
             return True
 
@@ -65,7 +66,6 @@ class UnoGame:
             
             # stores original values before any modification
             original_value = card.value
-            original_color = card.color
             
             # handles wild color selection
             if original_value in ["wild", "wild_draw4"] and self.current_player != 0:
@@ -115,9 +115,7 @@ class UnoGame:
         return False  # invalid move
         
     def handle_special_card(self, card: Card):
-        """Handle special cards and manage turn transitions properly"""
-        original_player = self.current_player
-        
+        """Handle special cards and manage turn transitions properly"""        
         # Skip: next player misses a turn
         if card.value == "skip":
             print(f"Skip card played! Next player will be skipped.")
@@ -168,12 +166,10 @@ class UnoGame:
 
         if 0 <= card_index < len(player.hand):
             card = player.hand[card_index]
-            
+
             # store original values
-            original_value = card.value
-            original_color = card.color
-            
-            # handle wild color selection
+            original_value = card.value            
+            # Handle wild color selection
             if original_value in ["wild", "wild_draw4"] and self.current_player != 0:
                 colors = {"red": 0, "blue": 0, "green": 0, "yellow": 0}
                 for c in player.hand:
@@ -215,9 +211,7 @@ class UnoGame:
         return False  
 
     def handle_special_card_silent(self, card: Card):
-        """Silent version of handle_special_card for AI simulations"""
-        original_player = self.current_player
-        
+        """Silent version of handle_special_card for AI simulations"""        
         # Skip: next player misses a turn
         if card.value == "skip":
             # move to next player, then skip them
