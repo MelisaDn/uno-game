@@ -88,11 +88,9 @@ class UnoInterface:
             current_player = self.game.players[self.game.current_player]
             
             print(f"\n=== {current_player.name}'s Turn ===")
-            print(f"Hand size: {len(current_player.hand)}")
-            print(f"Top card: {self.game.get_top_card().color} {self.game.get_top_card().value}")
             
             # Add a slight delay for better visualization
-            pygame.time.delay(1000)
+            pygame.time.delay(2000)
             
             move_index = None
             
