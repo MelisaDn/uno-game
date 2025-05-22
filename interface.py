@@ -59,14 +59,13 @@ class UnoInterface:
                 if card.rect.collidepoint(pos):
                     if self.game.is_valid_move(current_player.hand[i]):
                         card = current_player.hand[i]
-                        if card.color == "wild":
+                        if card.value in ["wild", "wild_draw4"]:
                             self.selected_card_index = i  # Save card to play after choosing color
                             self.show_color_chooser()     # Custom method to prompt color
                         else:
                             self.game.play_card(i)
-                            print(f"Played {card}")
                     else:
-                        print(f"Invalid move: {card}")
+                        print(f"Invalid move: {card.color} {card.value}")
                     break
                     
             # Check if clicking on the deck
@@ -81,7 +80,7 @@ class UnoInterface:
         # Check if it's an AI player's turn
         if self.game.current_player != 0:  # Not the human player
             # Add a slight delay for better visualization
-            pygame.time.delay(3000)
+            pygame.time.delay(1000)
             
             current_player = self.game.players[self.game.current_player]
             move_index = None
@@ -103,9 +102,10 @@ class UnoInterface:
                 
                 # Play the card
                 if self.game.play_card(move_index):
-                    print(f"{current_player.name} played {card}")
+                    # Note: The play_card method now prints confirmation
+                    pass
                 else:
-                    print(f"Invalid move by {current_player.name}: {card}")
+                    print(f"Invalid move by {current_player.name}: {card.color} {card.value}")
             else:
                 # Draw a card
                 self.game.draw_from_deck()
@@ -132,6 +132,10 @@ class UnoInterface:
         indicator = self.font.render(f"Current Turn: {current_player.name}", True, WHITE)
         screen.blit(indicator, (20, 20))
 
+        # Draw game direction indicator
+        direction_text = "Direction: Clockwise" if self.game.direction == 1 else "Direction: Counter-Clockwise"
+        direction_indicator = self.font.render(direction_text, True, WHITE)
+        screen.blit(direction_indicator, (20, 50))
         
     def draw_deck(self):
         # Draw the deck
@@ -287,12 +291,20 @@ class UnoInterface:
 
 
     def play_selected_wild_card(self, chosen_color):
-            player = self.game.players[0]  # Human is always player 0
-            card = player.hand[self.selected_card_index]
-            card.color = chosen_color
-            self.game.play_card(self.selected_card_index)
-            print(f"Played wild card with color {chosen_color}")
-            self.selected_card_index = -1
+        player = self.game.players[0]  # Human is always player 0
+        card = player.hand[self.selected_card_index]
+        
+        # Store original value for reference
+        original_value = card.value
+        
+        # Set the chosen color
+        card.color = chosen_color
+        
+        # Play the card
+        if self.game.play_card(self.selected_card_index):
+            print(f"Played {card.color} {original_value}")
+        
+        self.selected_card_index = -1
                         
 
     def show_winner(self, winner_name):

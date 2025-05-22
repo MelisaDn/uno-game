@@ -69,18 +69,17 @@ class UnoGame:
                 for c in player.hand:
                     if c.color in colors:
                         colors[c.color] += 1
-                chosen_color = max(colors, key=colors.get)
+                
+                # Choose most frequent color or random if no colored cards
                 if all(count == 0 for count in colors.values()):
                     chosen_color = random.choice(["red", "blue", "green", "yellow"])
-                
-                # Set color back to "wild" for validation
-                temp_color = card.color
-                card.color = original_color
+                else:
+                    chosen_color = max(colors, key=colors.get)
                 
                 # Check if valid move with original wild card state
                 valid_move = self.is_valid_move(card)
                 
-                # Now set the chosen color
+                # Now set the chosen color if valid move
                 if valid_move:
                     card.color = chosen_color
                     print(f"{player.name} chose {chosen_color} for wild card")
@@ -106,6 +105,9 @@ class UnoGame:
                 else:
                     self.next_turn()
 
+                # Print confirmation after the move is completed
+                print(f"{player.name} played {card.color} {card.value}")
+                
                 return True  # Play succeeded
                 
         return False  # Invalid or unplayable
@@ -115,23 +117,28 @@ class UnoGame:
     def handle_special_card(self, card: Card):
         # Skip: next player misses a turn
         if card.value == "skip":
-            self.next_turn()
+            # Advance turn twice - once to skip next player, once to go to player after that
+            self.next_turn()  # Skip to next player
+            self.next_turn()  # Skip to player after next
             
         # Reverse: change direction
         elif card.value == "reverse":
             self.direction *= -1
+            self.next_turn() 
             
         # Draw 2: next player draws 2 cards and misses a turn
         elif card.value == "draw2":
             next_player = (self.current_player + self.direction) % 4
             self.players[next_player].draw(self.deck, 2)
-            self.next_turn()
+            self.next_turn()  # Skip to next player
+            self.next_turn()  # Skip to player after next
             
         # Wild Draw 4: next player draws 4 cards and misses a turn
         elif card.value == "wild_draw4":
             next_player = (self.current_player + self.direction) % 4
             self.players[next_player].draw(self.deck, 4)
-            self.next_turn()
+            self.next_turn()  # Skip to next player
+            self.next_turn()  # Skip to player after next
             
     def next_turn(self):
         self.current_player = (self.current_player + self.direction) % 4
