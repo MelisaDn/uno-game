@@ -154,7 +154,14 @@ class UnoInterface:
         direction_text = "Direction: Clockwise" if self.game.direction == 1 else "Direction: Counter-Clockwise"
         direction_indicator = self.font.render(direction_text, True, WHITE)
         screen.blit(direction_indicator, (20, 50))
-        
+
+
+        # Display chosen wild card color
+        if self.game.last_wild_color:
+            wild_color_text = self.font.render(f"Wild color chosen: {self.game.last_wild_color.upper()}", True, WHITE)
+            screen.blit(wild_color_text, (SCREEN_WIDTH // 2 - wild_color_text.get_width() // 2, 10 ))
+  
+
     def draw_deck(self):
         # Draw the deck
         deck_img = pygame.Surface((CARD_WIDTH, CARD_HEIGHT))
@@ -317,6 +324,7 @@ class UnoInterface:
         
         # Set the chosen color
         card.color = chosen_color
+        self.game.last_wild_color = chosen_color
         
         # Play the card
         if self.game.play_card(self.selected_card_index):

@@ -15,6 +15,7 @@ class UnoGame:
         ]
         self.current_player = 0
         self.direction = 1  # 1: clockwise, -1: counter-clockwise
+        self.last_wild_color = None  # Add this to track chosen wild card colors
         
         # Initialize the game
         self.setup_game()
@@ -82,6 +83,7 @@ class UnoGame:
                 # Now set the chosen color if valid move
                 if valid_move:
                     card.color = chosen_color
+                    self.last_wild_color = chosen_color
                     print(f"{player.name} chose {chosen_color} for wild card")
                 else:
                     return False
