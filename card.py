@@ -27,7 +27,7 @@ class Card:
         # Add a white border
         pygame.draw.rect(card_img, WHITE, (3, 3, CARD_WIDTH-6, CARD_HEIGHT-6), 2)
         
-        # Add the value text
+        # Add the value text to the card
         font = pygame.font.SysFont('Arial', 30, bold=True)
         for dx in [-1, 0, 1]:
             for dy in [-1, 0, 1]:

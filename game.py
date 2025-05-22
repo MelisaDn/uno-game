@@ -15,7 +15,7 @@ class UnoGame:
         ]
         self.current_player = 0
         self.direction = 1  # 1: clockwise, -1: counter-clockwise
-        self.last_wild_color = None  # Add this to track chosen wild card colors
+        self.last_wild_color = None 
         
         # Initialize the game
         self.setup_game()
@@ -43,7 +43,7 @@ class UnoGame:
     def is_valid_move(self, card: Card) -> bool:
         top_card = self.get_top_card()
 
-        # Always allow wild and wild_draw4
+        # Always allow wild and wild_draw4 cards to be played 
         if card.value in ["wild", "wild_draw4"]:
             return True
 
