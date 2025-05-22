@@ -168,9 +168,7 @@ class UnoGame:
             card = player.hand[card_index]
             
             # Store original values before any modifications
-            original_value = card.value
-            original_color = card.color
-            
+            original_value = card.value            
             # Handle wild color selection
             if original_value in ["wild", "wild_draw4"] and self.current_player != 0:
                 colors = {"red": 0, "blue": 0, "green": 0, "yellow": 0}
