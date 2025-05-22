@@ -62,7 +62,6 @@ class UnoGame:
             
             # Store original values before any modifications
             original_value = card.value
-            original_color = card.color
             
             # Handle wild color selection
             if original_value in ["wild", "wild_draw4"] and self.current_player != 0:
@@ -116,9 +115,7 @@ class UnoGame:
 
         
     def handle_special_card(self, card: Card):
-        """Handle special cards and manage turn transitions properly"""
-        original_player = self.current_player
-        
+        """Handle special cards and manage turn transitions properly"""        
         # Skip: next player misses a turn
         if card.value == "skip":
             print(f"Skip card played! Next player will be skipped.")
@@ -217,9 +214,7 @@ class UnoGame:
         return False  # Invalid or unplayable
 
     def handle_special_card_silent(self, card: Card):
-        """Silent version of handle_special_card for AI simulations"""
-        original_player = self.current_player
-        
+        """Silent version of handle_special_card for AI simulations"""        
         # Skip: next player misses a turn
         if card.value == "skip":
             # Move to next player, then skip them
