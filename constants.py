@@ -2,14 +2,14 @@ import pygame
 # Initialize pygame
 pygame.init()
 
-# Constants
+# Constants for the game
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 600
 CARD_WIDTH = 100
 CARD_HEIGHT = 150
 CARD_SPACING = 30
 
-# Colors
+# Colors for the cards and background
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GREEN = (0, 128, 0)

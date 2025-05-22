@@ -61,7 +61,7 @@ class Deck:
         self.build()
         
     def build(self):
-        # Create regular cards 
+        # Create regular cards
         for color in COLORS:
             # One zero for each color
             self.cards.append(Card(color, "0"))
