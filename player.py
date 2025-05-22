@@ -48,18 +48,18 @@ class RuleBasedAI:
                        if card.color != "wild" and card.value not in ["skip", "reverse", "draw2"]]
         wild_cards = [(i, card) for i, card in playable_cards if card.value in ["wild", "wild_draw4"]]
         
-        # Choose in order of priority
+        # chooses in order of priority
         if special_cards:
             choice = random.choice(special_cards)
-            return choice[0]  # Return the index
+            return choice[0]  # return the index
         elif number_cards:
             choice = random.choice(number_cards)
-            return choice[0]  # Return the index
+            return choice[0]  
         elif wild_cards:
             choice = random.choice(wild_cards)
-            return choice[0]  # Return the index
+            return choice[0] 
         
-        return None  # Draw a card as fallback
+        return None  # if nothing else works, draw a card
 
 
 class MinimaxAI:
