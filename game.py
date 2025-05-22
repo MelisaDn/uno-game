@@ -112,33 +112,43 @@ class UnoGame:
                 
         return False  # Invalid or unplayable
 
-
         
     def handle_special_card(self, card: Card):
+        """Handle special cards and manage turn transitions properly"""
+        original_player = self.current_player
+        
         # Skip: next player misses a turn
         if card.value == "skip":
-            # Advance turn twice - once to skip next player, once to go to player after that
-            self.next_turn()  # Skip to next player
-            self.next_turn()  # Skip to player after next
+            print(f"Skip card played! Next player will be skipped.")
+            # Move to next player, then skip them
+            self.next_turn()  # Move to the player who gets skipped
+            skipped_player = self.players[self.current_player]
+            print(f"{skipped_player.name} is skipped!")
+            self.next_turn()  # Move to the player after the skipped one
             
         # Reverse: change direction
         elif card.value == "reverse":
+            print(f"Reverse card played! Direction changed.")
             self.direction *= -1
-            self.next_turn() 
+            self.next_turn()
             
         # Draw 2: next player draws 2 cards and misses a turn
         elif card.value == "draw2":
-            next_player = (self.current_player + self.direction) % 4
-            self.players[next_player].draw(self.deck, 2)
-            self.next_turn()  # Skip to next player
-            self.next_turn()  # Skip to player after next
+            self.next_turn()  # Move to next player
+            affected_player = self.players[self.current_player]
+            affected_player.draw(self.deck, 2)
+            print(f"{affected_player.name} draws 2 cards and is skipped!")
+            self.next_turn()  # Skip the affected player
             
         # Wild Draw 4: next player draws 4 cards and misses a turn
         elif card.value == "wild_draw4":
-            next_player = (self.current_player + self.direction) % 4
-            self.players[next_player].draw(self.deck, 4)
-            self.next_turn()  # Skip to next player
-            self.next_turn()  # Skip to player after next
+            self.next_turn()  # Move to next player
+            affected_player = self.players[self.current_player]
+            affected_player.draw(self.deck, 4)
+            print(f"{affected_player.name} draws 4 cards and is skipped!")
+            self.next_turn()  # Skip the affected player
+            
+        print(f"Turn now goes to: {self.players[self.current_player].name}")
             
     def next_turn(self):
         self.current_player = (self.current_player + self.direction) % 4
@@ -146,8 +156,100 @@ class UnoGame:
     def draw_from_deck(self):
         player = self.players[self.current_player]
         player.draw(self.deck, 1)
+        print(f"{player.name} drew a card from deck")
         self.next_turn()
 
+    def play_card_silent(self, card_index: int) -> bool:
+        """
+        Silent version of play_card for AI simulations - no print statements
+        """
+        player = self.players[self.current_player]
+
+        if 0 <= card_index < len(player.hand):
+            card = player.hand[card_index]
+            
+            # Store original values before any modifications
+            original_value = card.value
+            original_color = card.color
+            
+            # Handle wild color selection
+            if original_value in ["wild", "wild_draw4"] and self.current_player != 0:
+                colors = {"red": 0, "blue": 0, "green": 0, "yellow": 0}
+                for c in player.hand:
+                    if c.color in colors:
+                        colors[c.color] += 1
+                
+                # Choose most frequent color or random if no colored cards
+                if all(count == 0 for count in colors.values()):
+                    chosen_color = random.choice(["red", "blue", "green", "yellow"])
+                else:
+                    chosen_color = max(colors, key=colors.get)
+                
+                # Check if valid move with original wild card state
+                valid_move = self.is_valid_move(card)
+                
+                # Now set the chosen color if valid move
+                if valid_move:
+                    card.color = chosen_color
+                else:
+                    return False
+            else:
+                # Normal validation for non-wild cards
+                valid_move = self.is_valid_move(card)
+                
+            if valid_move:
+                # Remove the card from hand
+                played_card = player.play_card(card_index)
+
+                # Add to discard pile
+                self.discard_pile.append(played_card)
+
+                # Handle special cards
+                if original_value in ["skip", "draw2", "wild_draw4", "reverse"]:
+                    self.handle_special_card_silent(played_card)
+                else:
+                    self.next_turn()
+                
+                return True  # Play succeeded
+                
+        return False  # Invalid or unplayable
+
+    def handle_special_card_silent(self, card: Card):
+        """Silent version of handle_special_card for AI simulations"""
+        original_player = self.current_player
+        
+        # Skip: next player misses a turn
+        if card.value == "skip":
+            # Move to next player, then skip them
+            self.next_turn()  # Move to the player who gets skipped
+            self.next_turn()  # Move to the player after the skipped one
+            
+        # Reverse: change direction
+        elif card.value == "reverse":
+            self.direction *= -1
+            # In a 4-player game, reverse acts like skip
+            self.next_turn()
+            self.next_turn()
+            
+        # Draw 2: next player draws 2 cards and misses a turn
+        elif card.value == "draw2":
+            self.next_turn()  # Move to next player
+            affected_player = self.players[self.current_player]
+            affected_player.draw(self.deck, 2)
+            self.next_turn()  # Skip the affected player
+            
+        # Wild Draw 4: next player draws 4 cards and misses a turn
+        elif card.value == "wild_draw4":
+            self.next_turn()  # Move to next player
+            affected_player = self.players[self.current_player]
+            affected_player.draw(self.deck, 4)
+            self.next_turn()  # Skip the affected player
+
+    def draw_from_deck_silent(self):
+        """Silent version of draw_from_deck for AI simulations"""
+        player = self.players[self.current_player]
+        player.draw(self.deck, 1)
+        self.next_turn()
 
     def check_winner(self) -> Optional[str]:
         for player in self.players:

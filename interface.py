@@ -11,6 +11,7 @@ class UnoInterface:
         self.selected_card_index = -1
         self.font = pygame.font.SysFont('Arial', 20)
         self.title_font = pygame.font.SysFont('Arial', 36, bold=True)
+        self.last_player_turn = -1  # Track to prevent multiple moves per turn
         
         # Initialize AI players
         self.rule_based_ai = RuleBasedAI()
@@ -77,12 +78,22 @@ class UnoInterface:
                 print("Drew a card from the deck")
                 
     def ai_play_turn(self):
-        # Check if it's an AI player's turn
-        if self.game.current_player != 0:  # Not the human player
+        # Only allow AI to play if it's their turn and they haven't played this frame
+        if (self.game.current_player != 0 and 
+            self.last_player_turn != self.game.current_player):
+            
+            # Mark this turn as processed BEFORE making the move
+            self.last_player_turn = self.game.current_player
+            
+            current_player = self.game.players[self.game.current_player]
+            
+            print(f"\n=== {current_player.name}'s Turn ===")
+            print(f"Hand size: {len(current_player.hand)}")
+            print(f"Top card: {self.game.get_top_card().color} {self.game.get_top_card().value}")
+            
             # Add a slight delay for better visualization
             pygame.time.delay(1000)
             
-            current_player = self.game.players[self.game.current_player]
             move_index = None
             
             # Choose AI type based on player
@@ -97,23 +108,32 @@ class UnoInterface:
                 move_index = self.rule_based_ai.choose_move(current_player, self.game)
             
             # Execute the move
-            if move_index is not None:
+            if move_index is not None and move_index < len(current_player.hand):
                 card = current_player.hand[move_index]
+                print(f"Attempting to play: {card.color} {card.value}")
                 
                 # Play the card
                 if self.game.play_card(move_index):
-                    # Note: The play_card method now prints confirmation
-                    pass
+                    print(f"Successfully played card")
                 else:
                     print(f"Invalid move by {current_player.name}: {card.color} {card.value}")
+                    # If move failed, try drawing instead
+                    self.game.draw_from_deck()
             else:
                 # Draw a card
                 self.game.draw_from_deck()
-                print(f"{current_player.name} drew a card")
+            
+            print(f"=== End of {current_player.name}'s Turn ===")
+            print(f"Next player: {self.game.players[self.game.current_player].name}\n")
             
             # Update display to show AI move
             self.draw_game()
             pygame.display.flip()
+            
+        # Reset tracker when turn changes back to human or when current player changes
+        if self.game.current_player == 0 or self.last_player_turn == self.game.current_player:
+            if self.game.current_player != self.last_player_turn:
+                self.last_player_turn = -1
         
     def draw_game(self):
         # Fill background
