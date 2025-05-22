@@ -2,17 +2,20 @@ from card import Deck, Card
 import random
 
 class Player:
+    # each player has a name, an array of cards and a position
     def __init__(self, name: str, position: int):
         self.name = name
         self.hand = []
         self.position = position 
-        
+
+    # player draws a card from the deck and appends it to their hand
     def draw(self, deck: Deck, count: int = 1):
         for _ in range(count):
             card = deck.draw_card()
             if card:
                 self.hand.append(card)
-                
+
+    # if card index is valid, pop the card from the array
     def play_card(self, card_index: int):
         if 0 <= card_index < len(self.hand):
             return self.hand.pop(card_index)
@@ -23,22 +26,21 @@ class RuleBasedAI:
     """Simple rule-based AI that follows basic UNO strategy"""
     
     def choose_move(self, player, game):
+        # the agent gets the top card and finds all playable cards in its hand
         top_card = game.get_top_card()
         playable_cards = []
         
-        # Find all playable cards
         for i, card in enumerate(player.hand):
             if game.is_valid_move(card):
                 playable_cards.append((i, card))
         
         if not playable_cards:
-            # No playable cards, draw from deck
+            # if there are no playable cards, it should draw from the deck
             return None
-        
-        # Prioritize cards:
-        # 1. Special cards (Skip, Reverse, Draw Two)
-        # 2. Number cards
-        # 3. Wild cards (save them for when needed)
+
+        # this agent prioritizes the cards + first gets rid of special cards (skip, reverse, draw two)  
+        # + then plays the number cards + finally the wild cards
+       
         
         special_cards = [(i, card) for i, card in playable_cards 
                         if card.color != "wild" and card.value in ["skip", "reverse", "draw2"]]
@@ -46,18 +48,18 @@ class RuleBasedAI:
                        if card.color != "wild" and card.value not in ["skip", "reverse", "draw2"]]
         wild_cards = [(i, card) for i, card in playable_cards if card.value in ["wild", "wild_draw4"]]
         
-        # Choose in order of priority
+        # chooses in order of priority
         if special_cards:
             choice = random.choice(special_cards)
-            return choice[0]  # Return the index
+            return choice[0]  # return the index
         elif number_cards:
             choice = random.choice(number_cards)
-            return choice[0]  # Return the index
+            return choice[0]  
         elif wild_cards:
             choice = random.choice(wild_cards)
-            return choice[0]  # Return the index
+            return choice[0] 
         
-        return None  # Draw a card as fallback
+        return None  # if nothing else works, draw a card
 
 
 class MinimaxAI:

@@ -4,15 +4,18 @@ from constants import *
 
 class Card:
     def __init__(self, color: str, value: str):
+        # each card has a color, a number value and a rectangle image
         self.color = color
         self.value = value
         self.image = None
         self.rect = pygame.Rect(0, 0, CARD_WIDTH, CARD_HEIGHT)
         
     def load_image(self):
+
+        # get card-width and height
         card_img = pygame.Surface((CARD_WIDTH, CARD_HEIGHT))
         
-        # Set card color
+        # set the colors of the images according to their color values
         if self.color == "red":
             card_img.fill(RED)
         elif self.color == "blue":
@@ -21,13 +24,13 @@ class Card:
             card_img.fill(GREEN)
         elif self.color == "yellow":
             card_img.fill(YELLOW)
-        else:  # wild cards
+        else:  # wild cards are black
             card_img.fill(BLACK)
             
-        # Add a white border
+        # white border
         pygame.draw.rect(card_img, WHITE, (3, 3, CARD_WIDTH-6, CARD_HEIGHT-6), 2)
         
-        # Add the value text to the card
+        # print the value of the card on it
         font = pygame.font.SysFont('Arial', 30, bold=True)
         for dx in [-1, 0, 1]:
             for dy in [-1, 0, 1]:
@@ -41,15 +44,18 @@ class Card:
         
         self.image = card_img
         return card_img
-        
+
+    # print card info
     def __str__(self):
         return f"{self.color} {self.value}"
 
+    # check if two cards are exactly the same
     def __eq__(self, other):
         if not isinstance(other, Card):
             return False
         return self.color == other.color and self.value == other.value
 
+    # make a copy of the card
     def clone(self):
         return Card(self.color, self.value)
 
@@ -57,32 +63,32 @@ class Card:
 
 class Deck:
     def __init__(self):
+        # the deck in the middle as an array of cards
         self.cards = []
         self.build()
         
     def build(self):
-        # Create regular cards
+        # build the deck as having one 0 for each color + 2 of all other numbers
         for color in COLORS:
-            # One zero for each color
             self.cards.append(Card(color, "0"))
             
-            # Two of each other value
             for value in VALUES[1:]:
                 self.cards.append(Card(color, value))
                 self.cards.append(Card(color, value))
                 
-        # Create wild cards (4 of each type)
+        # 4 of each type of wild cards
         for _ in range(4):
             for special in SPECIAL_CARDS:
                 self.cards.append(Card("wild", special))
                 
-        # Shuffle the deck
+        # shuffle all values
         self.shuffle()
         
     def shuffle(self):
         random.shuffle(self.cards)
         
     def draw_card(self):
+        # pop the drawn card if there is at least 1 card in the deck
         if len(self.cards) > 0:
             return self.cards.pop()
         return None
