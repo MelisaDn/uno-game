@@ -179,7 +179,7 @@ class UnoInterface:
                                SCREEN_HEIGHT//2 + CARD_HEIGHT//2 + 10))
         
     def draw_discard_pile(self):
-        # black discard file in the middle
+        # black discard pile in the middle
         if self.game.discard_pile:
             top_card = self.game.discard_pile[-1]
             if not top_card.image:

@@ -147,13 +147,6 @@ class MinimaxAI:
             color_count = sum(1 for c in player.hand if c.color == card.color)
             score += color_count * 5
         
-        # Prefer higher value number cards
-        if card.value.isdigit():
-            score += int(card.value)
-        
-        # Small random factor to prevent deterministic play
-        score += random.uniform(-2, 2)
-        
         return score
     
     def _best_wild_color(self, hand):
@@ -169,7 +162,6 @@ class MinimaxAI:
     def _clone_game_state(self, game):
         """Create a deep copy of the game state for simulation"""
         from game import UnoGame
-        from copy import deepcopy
         
         # Create a completely independent copy
         clone = UnoGame.__new__(UnoGame)
